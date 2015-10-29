@@ -9,6 +9,6 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		new LwjglApplication(new Bomberman(), config);
 		config.height=500;
-		config.width=500;
+		config.width=800;
 	}
 }

@@ -2,11 +2,9 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -29,15 +27,16 @@ public class Bomberman extends ApplicationAdapter implements InputProcessor {
     private static final int FRAME_ROWS = 5;
 
     SpriteBatch batch;
-    private TextureAtlas atlas = new TextureAtlas();
-    private TextureRegion hero = new TextureRegion();
-    TextureRegion heroRegion;
-    Animation heroAnimation;
-   // AnimatedSprite heroAnimatedSprite;
-
+    TextureAtlas taChars = new TextureAtlas();
+    TextureRegion trFront = new TextureRegion();
+    public int nCharX=0, nCharY=0;
+    //  TextureRegion heroRegion;
+    // Animation heroAnimation;
+    // AnimatedSprite heroAnimatedSprite;
 
     @Override
     public void create() {
+        batch = new SpriteBatch();
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         tiledMap = new TmxMapLoader().load("bombermap.tmx");
@@ -50,8 +49,12 @@ public class Bomberman extends ApplicationAdapter implements InputProcessor {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, nMapWidth, nMapHeight);
         System.out.println(nMapHeight + " " + nMapWidth);
+
+        taChars = new TextureAtlas(Gdx.files.internal("bomber.pack"));
+        trFront = new TextureRegion(taChars.findRegion("frontwalk"));
         camera.update();
     }
+
 
     @Override
     public void render() {
@@ -61,7 +64,11 @@ public class Bomberman extends ApplicationAdapter implements InputProcessor {
         camera.update();
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
-
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(trFront, nCharX, nCharY);
+        batch.end();
+        camera.update();
     }
 
     @Override
@@ -71,18 +78,6 @@ public class Bomberman extends ApplicationAdapter implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.LEFT)
-            camera.translate(-32, 0);
-        if (keycode == Input.Keys.RIGHT)
-            camera.translate(32, 0);
-        if (keycode == Input.Keys.UP)
-            camera.translate(0, -32);
-        if (keycode == Input.Keys.DOWN)
-            camera.translate(0, 32);
-        if (keycode == Input.Keys.NUM_1)
-            tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
-        if (keycode == Input.Keys.NUM_2)
-            tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
         return false;
     }
 
@@ -93,6 +88,9 @@ public class Bomberman extends ApplicationAdapter implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        nCharX=Gdx.input.getX();
+        nCharY=Gdx.input.getY();
+        System.out.println("x: "+Gdx.input.getX()+" y: "+Gdx.input.getY());
         return false;
     }
 
